@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Studio Records | Official Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #060b16;
+            --electric-blue: #00d2ff;
+            --soft-blue: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--deep-blue);
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-sync {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(6, 11, 22, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+        }
+
+        /* Accordion Styling */
+        details {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        details[open] {
+            border-color: var(--electric-blue);
+            background: rgba(0, 210, 255, 0.02);
+        }
+
+        summary {
+            list-style: none;
+            padding: 1.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+        summary::after {
+            content: '+';
+            color: var(--electric-blue);
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        details[open] summary::after {
+            content: '−';
+            transform: rotate(180deg);
+        }
+
+        /* Audio & Purchase Row */
+        .track-row {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+        @media (min-width: 640px) {
+            .track-row { flex-direction: row; align-items: center; }
+        }
+        .track-row:hover {
+            border-color: rgba(0, 210, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        audio {
+            height: 30px;
+            filter: invert(100%) hue-rotate(180deg) brightness(1.5);
+            flex-grow: 1;
+            outline: none;
+        }
+
+        /* Nasconde il tasto download nei browser basati su Chromium */
+        audio::-webkit-media-controls-enclosure {
+            overflow: hidden;
+        }
+        audio::-webkit-media-controls-panel {
+            width: calc(100% + 30px); 
+        }
+
+        .btn-buy-track {
+            background: var(--electric-blue);
+            color: var(--deep-blue);
+            font-weight: 800;
+            font-size: 10px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .btn-buy-track:hover {
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .logo-hexagon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cart-sidebar {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cart-open { transform: translateX(0) !important; }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0; width: 0; height: 2px;
+            background: var(--electric-blue);
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: var(--electric-blue); }
+
+        #notification {
+            display: none;
+            position: fixed;
+            top: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 100; padding: 1rem 2rem; border-radius: 99px;
+            background: var(--electric-blue); color: var(--deep-blue);
+            font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false">
+
+    <div id="notification">Aggiunto al carrello!</div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                <div class="logo-box">
+                    <span class="text-xs font-bold text-black">ISR</span>
+                </div>
+                <span class="font-sync font-bold text-xl tracking-tighter uppercase">Ice Studio<span class="text-[#00d2ff]"> Records</span></span>
+            </div>
+            
+            <nav class="hidden lg:flex gap-8 text-sm font-semibold uppercase tracking-widest">
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="nav-link">Home</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="nav-link">Chi Siamo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="nav-link">Bundle</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="nav-link">Catalogo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="nav-link">Prenota</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="nav-link">Merch</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="nav-link">Artisti</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="nav-link">Contatti</a>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button class="lg:hidden text-white focus:outline-none" onclick="toggleMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+                        <div class="flex items-center">
+                <button onclick="toggleCart()" class="cart-btn-glow relative p-2 text-cyan-400 transition-all group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 group-active:scale-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-white text-[#0a111f] text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0a111f] shadow-lg">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-cyan-900/50 flex flex-col p-6 gap-4 uppercase text-sm font-bold tracking-widest">
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')">Home</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')">Chi Siamo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')">Bundle</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')">Catalogo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')">Prenota Sessione</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')">Merch</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')">Artisti</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')">Contatti</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-6 max-w-4xl mx-auto">
+        
+        <header class="mb-12 text-center">
+            <h2 class="font-sync text-4xl md:text-5xl font-black mb-4 uppercase">Il nostro <span class="text-cyan-400">Catalogo</span></h2>
+            <p class="text-slate-400 uppercase tracking-widest text-xs">Acquista i beat dei nostri producer a <span class="text-white">20€</span> l'uno</p>
+        </header>
+
+        <section class="space-y-4">
+            <!-- Producer 1 -->
+            <details>
+                <summary class="font-sync text-sm">Producer: Alex Frost</summary>
+                <div class="p-6 pt-0">
+                    <div class="space-y-3">
+                        <div class="track-row">
+                            <div class="w-full sm:w-40 flex flex-col">
+                                <span class="text-xs font-bold uppercase truncate">Arctic Nights</span>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest">Leasing: 20€</span>
+                            </div>
+                            <audio controls controlsList="nodownload" oncontextmenu="return false;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+                            <button onclick="addToCart('Arctic Nights - Alex Frost', 20)" class="btn-buy-track">Acquista</button>
+                        </div>
+                        <div class="track-row">
+                            <div class="w-full sm:w-40 flex flex-col">
+                                <span class="text-xs font-bold uppercase truncate">Crystal Flow</span>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest">Leasing: 20€</span>
+                            </div>
+                            <audio controls controlsList="nodownload" oncontextmenu="return false;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+                            <button onclick="addToCart('Crystal Flow - Alex Frost', 20)" class="btn-buy-track">Acquista</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Producer 2 -->
+            <details>
+                <summary class="font-sync text-sm">Producer: Iceberg Beats</summary>
+                <div class="p-6 pt-0">
+                    <div class="space-y-3">
+                        <div class="track-row">
+                            <div class="w-full sm:w-40 flex flex-col">
+                                <span class="text-xs font-bold uppercase truncate">Sub Zero</span>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest">Leasing: 20€</span>
+                            </div>
+                            <audio controls controlsList="nodownload" oncontextmenu="return false;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"></audio>
+                            <button onclick="addToCart('Sub Zero - Iceberg', 20)" class="btn-buy-track">Acquista</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-[#0a111f] z-[60] translate-x-full shadow-2xl border-l border-white/10 flex flex-col">
+        <div class="p-8 flex justify-between items-center border-b border-white/5 bg-black/20">
+            <h3 class="font-sync text-sm tracking-widest uppercase">Il Tuo Carrello</h3>
+            <button onclick="toggleCart()" class="text-slate-400 hover:text-white transition-colors text-xs font-bold">CHIUDI</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Items injected via JS -->
+        </div>
+        <div class="p-8 border-t border-white/5 bg-black/40">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-xs uppercase text-slate-400 font-bold tracking-widest">Totale</span>
+                <span id="cart-total" class="text-3xl font-black text-cyan-400">0€</span>
+            </div>
+            <button onclick="checkout()" class="w-full bg-cyan-400 text-black py-4 rounded-xl font-bold uppercase text-xs tracking-widest hover:brightness-110 active:scale-[0.98] transition-all">
+                Paga con PayPal.Me
+            </button>
+            <p class="text-[9px] text-slate-500 text-center mt-4 italic uppercase tracking-tighter">Inserisci manualmente l'importo totale sulla pagina di PayPal</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#05070a] border-t border-white/5 py-16 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+            
+            <!-- Left: Logo & Name -->
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="logo-box">
+                        <span class="text-xs font-bold text-black">ISR</span>
+                    </div>
+                    <span class="font-sync font-bold text-xl uppercase">Ice Studio Records</span>
+                </div>
+                <p class="text-slate-500 text-sm max-w-xs">
+                    L'eccellenza della registrazione nel cuore dell'industria musicale. La tua visione, il nostro suono.
+                </p>
+            </div>
+
+            <!-- Center: Menus & Legal -->
+            <div class="flex flex-col items-center text-center gap-8">
+                <!-- Main Nav Duplicate -->
+                <nav class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase tracking-wider text-slate-300">
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="hover:text-cyan-400">Home</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="hover:text-cyan-400">Chi Siamo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="hover:text-cyan-400">Bundle</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="hover:text-cyan-400">Catalogo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="hover:text-cyan-400">Prenota</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="hover:text-cyan-400">Merch</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="hover:text-cyan-400">Artisti</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="hover:text-cyan-400">Contatti</a>
+                </nav>
+
+                <!-- Privacy & Terms -->
+                <div class="flex gap-6 text-xs text-slate-500">
+                    <a href="#" class="hover:text-white transition">Privacy & Policy</a>
+                    <a href="#" class="hover:text-white transition">Termini e Condizioni</a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="text-[10px] text-slate-600 uppercase tracking-[0.2em]">
+                    &copy; 2024 Ice Studio Records. Tutti i diritti riservati.
+                </div>
+            </div>
+
+            <!-- Right: Contacts -->
+            <div class="flex flex-col md:items-end gap-2">
+                <h4 class="text-xs font-bold uppercase text-cyan-400 mb-2 tracking-widest">Contatti</h4>
+                <a href="mailto:info@icestudiorecords.com" class="text-lg hover:text-cyan-300 transition">info@icestudiorecords.com</a>
+                <a href="tel:+390123456789" class="text-lg hover:text-cyan-300 transition">+39 012 345 6789</a>
+                <div class="flex gap-4 mt-4">
+                    <!-- Placeholder Social Icons -->
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">IG</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">TK</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">YT</div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        let cart = [];
+        const paypalUsername = "CristianAntonini601";
+
+        // Carica il carrello dal Local Storage all'avvio
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCart = localStorage.getItem('iceStudioCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateUI();
+            }
+        });
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('cart-open');
+        }
+
+        function saveCart() {
+            localStorage.setItem('iceStudioCart', JSON.stringify(cart));
+        }
+
+        function addToCart(name, price) {
+            cart.push({ id: Date.now(), name, price });
+            saveCart(); // Salva dopo ogni aggiunta
+            updateUI();
+            showNotification();
+            if(!document.getElementById('cart-sidebar').classList.contains('cart-open')) toggleCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            saveCart(); // Salva dopo ogni rimozione
+            updateUI();
+        }
+
+        function updateUI() {
+            const list = document.getElementById('cart-items');
+            const count = document.getElementById('cart-count');
+            const total = document.getElementById('cart-total');
+            
+            count.innerText = cart.length;
+            
+            if(cart.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center text-xs italic py-10 uppercase">Il tuo carrello è vuoto</p>`;
+                total.innerText = "0€";
+                return;
+            }
+
+            let sum = 0;
+            list.innerHTML = cart.map(item => {
+                sum += item.price;
+                return `
+                    <div class="bg-white/5 p-4 rounded-xl flex justify-between items-center border border-white/5 group hover:border-cyan-400/30 transition-all">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-bold uppercase text-slate-200 tracking-wider">${item.name}</span>
+                            <span class="text-cyan-400 font-black text-xs">${item.price}€</span>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-slate-600 hover:text-red-400 text-[10px] font-black p-2 transition-colors">RIMUOVI</button>
+                    </div>
+                `;
+            }).join('');
+            total.innerText = sum + "€";
+        }
+
+        function showNotification() {
+            const n = document.getElementById('notification');
+            n.style.display = 'block';
+            setTimeout(() => n.style.display = 'none', 2000);
+        }
+
+        function checkout() {
+            if(cart.length === 0) return;
+            const total = cart.reduce((acc, i) => acc + i.price, 0);
+            window.open(`https://www.paypal.me/${paypalUsername}/${total}`, '_blank');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Studio Records | Il Tuo Suono, La Nostra Passione</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #0a0e17;
+            --electric-blue: #00d2ff;
+            --ice-cyan: #a5f3fc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--deep-blue);
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-sync {
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: -0.05em;
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #1e293b 0%, #0a0e17 100%);
+        }
+
+        .glass-effect {
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--electric-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--electric-blue);
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            border-color: var(--electric-blue);
+            transform: translateY(-5px);
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.2), transparent);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                <div class="logo-box">
+                    <span class="text-xs font-bold text-black">ISR</span>
+                </div>
+                <span class="font-sync font-bold text-xl tracking-tighter uppercase">Ice Studio<span class="text-[#00d2ff]"> Records</span></span>
+            </div>
+            
+            <nav class="hidden lg:flex gap-8 text-sm font-semibold uppercase tracking-widest">
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="nav-link">Home</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="nav-link">Chi Siamo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="nav-link">Bundle</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="nav-link">Catalogo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="nav-link">Prenota</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="nav-link">Merch</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="nav-link">Artisti</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="nav-link">Contatti</a>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button class="lg:hidden text-white focus:outline-none" onclick="toggleMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+                        <div class="flex items-center">
+                <button onclick="toggleCart()" class="cart-btn-glow relative p-2 text-cyan-400 transition-all group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 group-active:scale-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-white text-[#0a111f] text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0a111f] shadow-lg">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-cyan-900/50 flex flex-col p-6 gap-4 uppercase text-sm font-bold tracking-widest">
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')">Home</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')">Chi Siamo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')">Bundle</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')">Catalogo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')">Prenota Sessione</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')">Merch</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')">Artisti</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')">Contatti</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-content" class="pt-20">
+        
+        <!-- Home Section -->
+        <section id="home">
+            <!-- Hero Area -->
+            <div class="hero-gradient py-24 px-6 text-center relative">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="font-sync text-5xl md:text-7xl font-extrabold mb-6 tracking-tighter">
+                        ICE STUDIO RECORDS
+                    </h1>
+                    <div class="h-1 w-24 bg-cyan-500 mx-auto mb-8"></div>
+                    <p class="text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
+                        Siamo un polo creativo all'avanguardia dove la tecnologia incontra l'arte. 
+                        Dalla registrazione al mastering, portiamo la tua musica a un livello superiore.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Chi Siamo / Team Section -->
+            <div id="chi-siamo-content" class="max-w-7xl mx-auto py-20 px-6">
+                <div class="text-center mb-16">
+                    <h2 class="font-sync text-3xl uppercase text-cyan-400 mb-4">Il Nostro Team</h2>
+                    <p class="text-slate-400 max-w-xl mx-auto">Le menti e le orecchie dietro ai successi di Ice Studio Records. Professionisti dedicati alla perfezione sonora.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Team Member 1 -->
+                    <div class="team-card p-6 rounded-2xl text-center">
+                        <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-6 overflow-hidden border-2 border-cyan-500/30">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marco" alt="[Immagine di Marco Rossi]" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-bold text-xl mb-1">Marco Rossi</h3>
+                        <p class="text-cyan-400 text-xs uppercase tracking-widest mb-4">Founder & Senior Engineer</p>
+                        <p class="text-slate-400 text-sm italic">"Il suono è un'emozione che va scolpita con precisione chirurgica."</p>
+                    </div>
+
+                    <!-- Team Member 2 -->
+                    <div class="team-card p-6 rounded-2xl text-center">
+                        <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-6 overflow-hidden border-2 border-cyan-500/30">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia" alt="[Immagine di Sofia Bianchi]" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-bold text-xl mb-1">Sofia Bianchi</h3>
+                        <p class="text-cyan-400 text-xs uppercase tracking-widest mb-4">Music Producer</p>
+                        <p class="text-slate-400 text-sm italic">"Creo mondi sonori unici per ogni artista che varca questa soglia."</p>
+                    </div>
+
+                    <!-- Team Member 3 -->
+                    <div class="team-card p-6 rounded-2xl text-center">
+                        <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-6 overflow-hidden border-2 border-cyan-500/30">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Luca" alt="[Immagine di Luca Esposito]" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-bold text-xl mb-1">Luca Esposito</h3>
+                        <p class="text-cyan-400 text-xs uppercase tracking-widest mb-4">Mixing Specialist</p>
+                        <p class="text-slate-400 text-sm italic">"La magia avviene nel bilanciamento perfetto di ogni singola traccia."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Placeholder for Navigated Pages -->
+        <section id="sub-page" class="hidden min-h-[60vh] flex flex-col items-center justify-center p-12 text-center hero-gradient">
+            <h2 id="sub-page-title" class="font-sync text-4xl mb-6 uppercase text-cyan-400"></h2>
+            <p class="text-slate-400 text-lg max-w-md">Questa sezione è attualmente in fase di aggiornamento. Torna presto per scoprire tutte le novità.</p>
+            <button onclick="navigateTo('home')" class="mt-10 px-8 py-3 border border-cyan-500 text-cyan-500 rounded-full hover:bg-cyan-500 hover:text-black transition uppercase text-xs font-bold tracking-widest">Torna alla Home</button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#05070a] border-t border-white/5 py-16 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+            
+            <!-- Left: Logo & Name -->
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="logo-box">
+                        <span class="text-xs font-bold text-black">ISR</span>
+                    </div>
+                    <span class="font-sync font-bold text-xl uppercase">Ice Studio Records</span>
+                </div>
+                <p class="text-slate-500 text-sm max-w-xs">
+                    L'eccellenza della registrazione nel cuore dell'industria musicale. La tua visione, il nostro suono.
+                </p>
+            </div>
+
+            <!-- Center: Menus & Legal -->
+            <div class="flex flex-col items-center text-center gap-8">
+                <!-- Main Nav Duplicate -->
+                <nav class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase tracking-wider text-slate-300">
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="hover:text-cyan-400">Home</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="hover:text-cyan-400">Chi Siamo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="hover:text-cyan-400">Bundle</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="hover:text-cyan-400">Catalogo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="hover:text-cyan-400">Prenota</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="hover:text-cyan-400">Merch</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="hover:text-cyan-400">Artisti</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="hover:text-cyan-400">Contatti</a>
+                </nav>
+
+                <!-- Privacy & Terms -->
+                <div class="flex gap-6 text-xs text-slate-500">
+                    <a href="#" class="hover:text-white transition">Privacy & Policy</a>
+                    <a href="#" class="hover:text-white transition">Termini e Condizioni</a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="text-[10px] text-slate-600 uppercase tracking-[0.2em]">
+                    &copy; 2024 Ice Studio Records. Tutti i diritti riservati.
+                </div>
+            </div>
+
+            <!-- Right: Contacts -->
+            <div class="flex flex-col md:items-end gap-2">
+                <h4 class="text-xs font-bold uppercase text-cyan-400 mb-2 tracking-widest">Contatti</h4>
+                <a href="mailto:info@icestudiorecords.com" class="text-lg hover:text-cyan-300 transition">info@icestudiorecords.com</a>
+                <a href="tel:+390123456789" class="text-lg hover:text-cyan-300 transition">+39 012 345 6789</a>
+                <div class="flex gap-4 mt-4">
+                    <!-- Placeholder Social Icons -->
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">IG</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">TK</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">YT</div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function navigateTo(pageId) {
+            const homeSection = document.getElementById('home');
+            const subPageSection = document.getElementById('sub-page');
+            const subPageTitle = document.getElementById('sub-page-title');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenu.classList.add('hidden');
+
+            if (pageId === 'home') {
+                homeSection.classList.remove('hidden');
+                subPageSection.classList.add('hidden');
+            } else {
+                homeSection.classList.add('hidden');
+                subPageSection.classList.remove('hidden');
+                subPageTitle.innerText = pageId.replace('-', ' ');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
