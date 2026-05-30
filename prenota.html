@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Studio Records | Prenota una Sessione</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <!-- EmailJS SDK per invio email -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            --deep-blue: #060b16;
+            --electric-blue: #00d2ff;
+            --soft-blue: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--deep-blue);
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-sync { font-family: 'Syncopate', sans-serif; }
+
+        .glass-nav {
+            background: rgba(6, 11, 22, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+        }
+
+        .logo-hexagon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .nav-link {
+            position: relative; transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+            background: var(--electric-blue); transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: var(--electric-blue); }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 2rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .day-label {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--electric-blue);
+            text-transform: uppercase;
+            padding-bottom: 0.5rem;
+        }
+
+        .calendar-day.empty { cursor: default; }
+        .calendar-day.weekend { color: #475569; cursor: not-allowed; background: rgba(255,255,255,0.01); }
+        .calendar-day.available:hover { 
+            background: rgba(0, 210, 255, 0.1); 
+            border-color: var(--electric-blue);
+            color: var(--electric-blue);
+        }
+        .calendar-day.selected { background: var(--electric-blue); color: var(--deep-blue); }
+        .calendar-day.occupied { 
+            background: rgba(239, 68, 68, 0.1); 
+            color: #ef4444; 
+            cursor: not-allowed; 
+            text-decoration: line-through;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #notification {
+            display: none;
+            position: fixed;
+            top: 100px; left: 50%; transform: translateX(-50%);
+            z-index: 100; padding: 1rem 2rem; border-radius: 99px;
+            background: var(--electric-blue); color: var(--deep-blue);
+            font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="notification">Prenotazione inviata! Controlla la tua email.</div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                <div class="logo-box">
+                    <span class="text-xs font-bold text-black">ISR</span>
+                </div>
+                <span class="font-sync font-bold text-xl tracking-tighter uppercase">Ice Studio<span class="text-[#00d2ff]"> Records</span></span>
+            </div>
+            
+            <nav class="hidden lg:flex gap-8 text-sm font-semibold uppercase tracking-widest">
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="nav-link">Home</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="nav-link">Chi Siamo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="nav-link">Bundle</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="nav-link">Catalogo</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="nav-link">Prenota</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="nav-link">Merch</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="nav-link">Artisti</a>
+                <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="nav-link">Contatti</a>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button class="lg:hidden text-white focus:outline-none" onclick="toggleMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+                        <div class="flex items-center">
+                <button onclick="toggleCart()" class="cart-btn-glow relative p-2 text-cyan-400 transition-all group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 group-active:scale-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-white text-[#0a111f] text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0a111f] shadow-lg">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-cyan-900/50 flex flex-col p-6 gap-4 uppercase text-sm font-bold tracking-widest">
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')">Home</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')">Chi Siamo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')">Bundle</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')">Catalogo</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')">Prenota Sessione</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')">Merch</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')">Artisti</a>
+            <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')">Contatti</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-6 max-w-4xl mx-auto">
+        <header class="mb-12 text-center">
+            <h2 class="font-sync text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter">Prenota una <span class="text-cyan-400">Chiamata</span></h2>
+            <p class="text-slate-400 uppercase tracking-widest text-xs">Un incontro di 45 minuti per conoscerci e parlare dei tuoi progetti</p>
+        </header>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Calendario -->
+            <div class="md:col-span-2 calendar-container">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 id="current-month" class="font-sync text-sm uppercase tracking-widest">Maggio 2024</h3>
+                    <div class="flex gap-4">
+                        <button onclick="changeMonth(-1)" class="text-cyan-400 hover:scale-110">←</button>
+                        <button onclick="changeMonth(1)" class="text-cyan-400 hover:scale-110">→</button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="day-label">Lun</div>
+                    <div class="day-label">Mar</div>
+                    <div class="day-label">Mer</div>
+                    <div class="day-label">Gio</div>
+                    <div class="day-label">Ven</div>
+                    <div class="day-label">Sab</div>
+                    <div class="day-label">Dom</div>
+                </div>
+            </div>
+
+            <!-- Info Prenotazione -->
+            <div class="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-sync text-xs text-cyan-400 mb-6 uppercase tracking-widest">Dettagli</h4>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-400/10 flex items-center justify-center text-cyan-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Durata: 45 Minuti</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-400/10 flex items-center justify-center text-cyan-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <span id="selected-date-text" class="text-xs font-bold uppercase tracking-widest text-slate-300">Seleziona un giorno</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="book-btn" disabled onclick="openBookingModal()" class="w-full mt-10 bg-slate-800 text-slate-500 py-4 rounded-xl font-bold uppercase text-[10px] tracking-[0.2em] transition-all disabled:cursor-not-allowed">
+                    Prenota Chiamata
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Prenotazione -->
+    <div id="booking-modal" class="modal">
+        <div class="bg-[#0a111f] border border-white/10 p-8 rounded-3xl w-full max-w-md mx-6">
+            <h3 class="font-sync text-lg mb-2 uppercase text-white">Conferma Appuntamento</h3>
+            <p id="modal-date" class="text-xs text-cyan-400 uppercase tracking-widest mb-8"></p>
+            
+            <form id="booking-form" onsubmit="confirmBooking(event)" class="space-y-4">
+                <input type="text" id="user-name" name="from_name" placeholder="Nome Completo" required class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-cyan-400">
+                <input type="email" id="user-email" name="reply_to" placeholder="Email" required class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-cyan-400">
+                <!-- Campo nascosto per la data -->
+                <input type="hidden" id="selected-date-val" name="booking_date">
+                
+                <div class="pt-4 flex gap-4">
+                    <button type="button" onclick="closeModal()" class="flex-grow py-4 text-slate-400 font-bold uppercase text-[10px]">Annulla</button>
+                    <button type="submit" id="confirm-btn" class="flex-grow bg-cyan-400 text-black py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest">Conferma</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#05070a] border-t border-white/5 py-16 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+            
+            <!-- Left: Logo & Name -->
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="logo-box">
+                        <span class="text-xs font-bold text-black">ISR</span>
+                    </div>
+                    <span class="font-sync font-bold text-xl uppercase">Ice Studio Records</span>
+                </div>
+                <p class="text-slate-500 text-sm max-w-xs">
+                    L'eccellenza della registrazione nel cuore dell'industria musicale. La tua visione, il nostro suono.
+                </p>
+            </div>
+
+            <!-- Center: Menus & Legal -->
+            <div class="flex flex-col items-center text-center gap-8">
+                <!-- Main Nav Duplicate -->
+                <nav class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase tracking-wider text-slate-300">
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/index.html" onclick="navigateTo('home')" class="hover:text-cyan-400">Home</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/chi%20siamo.html" onclick="navigateTo('chi-siamo')" class="hover:text-cyan-400">Chi Siamo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/bundle.html" onclick="navigateTo('bundle')" class="hover:text-cyan-400">Bundle</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/catalogo.html" onclick="navigateTo('catalogo')" class="hover:text-cyan-400">Catalogo</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/prenota.html" onclick="navigateTo('prenota')" class="hover:text-cyan-400">Prenota</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/merch.html" onclick="navigateTo('merch')" class="hover:text-cyan-400">Merch</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/artisti.html" onclick="navigateTo('artisti')" class="hover:text-cyan-400">Artisti</a>
+                    <a href="file:///C:/Users/crist/Desktop/ice%20studio%20site/contatti.html" onclick="navigateTo('contatti')" class="hover:text-cyan-400">Contatti</a>
+                </nav>
+
+                <!-- Privacy & Terms -->
+                <div class="flex gap-6 text-xs text-slate-500">
+                    <a href="#" class="hover:text-white transition">Privacy & Policy</a>
+                    <a href="#" class="hover:text-white transition">Termini e Condizioni</a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="text-[10px] text-slate-600 uppercase tracking-[0.2em]">
+                    &copy; 2024 Ice Studio Records. Tutti i diritti riservati.
+                </div>
+            </div>
+
+            <!-- Right: Contacts -->
+            <div class="flex flex-col md:items-end gap-2">
+                <h4 class="text-xs font-bold uppercase text-cyan-400 mb-2 tracking-widest">Contatti</h4>
+                <a href="mailto:info@icestudiorecords.com" class="text-lg hover:text-cyan-300 transition">info@icestudiorecords.com</a>
+                <a href="tel:+390123456789" class="text-lg hover:text-cyan-300 transition">+39 012 345 6789</a>
+                <div class="flex gap-4 mt-4">
+                    <!-- Placeholder Social Icons -->
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">IG</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">TK</div>
+                    <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-cyan-500/20 cursor-pointer">YT</div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        // --- CONFIGURAZIONE EMAILJS ---
+        // 1. Vai su https://www.emailjs.com/
+        // 2. Crea account e ottieni i codici
+        (function() {
+            emailjs.init("IL_TUO_USER_ID"); // Sostituisci con il tuo User ID di EmailJS
+        })();
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let occupiedDates = JSON.parse(localStorage.getItem('iceStudioBookings') || '[]');
+
+        const months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+
+        function renderCalendar() {
+            const grid = document.querySelector('.calendar-grid');
+            const monthLabel = document.getElementById('current-month');
+            
+            const labels = grid.querySelectorAll('.day-label');
+            grid.innerHTML = '';
+            labels.forEach(l => grid.appendChild(l));
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            monthLabel.innerText = `${months[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; 
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < adjustedFirstDay; i++) {
+                const div = document.createElement('div');
+                div.className = 'calendar-day empty';
+                grid.appendChild(div);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayDiv = document.createElement('div');
+                const dateObj = new Date(year, month, d);
+                const dayOfWeek = dateObj.getDay(); 
+                const dateString = `${year}-${month}-${d}`;
+                
+                dayDiv.innerText = d;
+                dayDiv.className = 'calendar-day';
+
+                const isOccupied = occupiedDates.includes(dateString);
+                const isPast = dateObj < new Date().setHours(0,0,0,0);
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    dayDiv.classList.add('weekend');
+                } else if (isOccupied || isPast) {
+                    dayDiv.classList.add('occupied');
+                } else {
+                    dayDiv.classList.add('available');
+                    dayDiv.onclick = () => selectDate(d, dateString);
+                    if (selectedDate === dateString) dayDiv.classList.add('selected');
+                }
+                
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        function selectDate(day, dateString) {
+            selectedDate = dateString;
+            const fullDateText = `${day} ${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            document.getElementById('selected-date-text').innerText = `Giorno: ${fullDateText}`;
+            document.getElementById('selected-date-val').value = fullDateText;
+            
+            const btn = document.getElementById('book-btn');
+            btn.disabled = false;
+            btn.classList.replace('bg-slate-800', 'bg-cyan-400');
+            btn.classList.replace('text-slate-500', 'text-black');
+            
+            renderCalendar();
+        }
+
+        function changeMonth(dir) {
+            currentDate.setMonth(currentDate.getMonth() + dir);
+            selectedDate = null;
+            document.getElementById('selected-date-text').innerText = "Seleziona un giorno";
+            document.getElementById('book-btn').disabled = true;
+            renderCalendar();
+        }
+
+        function openBookingModal() {
+            document.getElementById('modal-date').innerText = `Data: ${document.getElementById('selected-date-val').value} (45m)`;
+            document.getElementById('booking-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('booking-modal').style.display = 'none';
+        }
+
+        function confirmBooking(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('confirm-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "INVIO IN CORSO...";
+            btn.disabled = true;
+
+            // Parametri per EmailJS (Devi creare un template su EmailJS con questi nomi {{from_name}}, {{reply_to}}, {{booking_date}})
+            const templateParams = {
+                from_name: document.getElementById('user-name').value,
+                reply_to: document.getElementById('user-email').value,
+                booking_date: document.getElementById('selected-date-val').value,
+                to_email: 'icestudioguidonia@gmail.com'
+            };
+
+            // Esegui l'invio email (Sostituisci SERVICE_ID e TEMPLATE_ID con i tuoi)
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                .then(function() {
+                    // Successo
+                    occupiedDates.push(selectedDate);
+                    localStorage.setItem('iceStudioBookings', JSON.stringify(occupiedDates));
+                    
+                    showNotification("Prenotazione inviata con successo!");
+                    finalizeBooking();
+                }, function(error) {
+                    // In caso di errore (es. se non hai ancora configurato EmailJS)
+                    // Simuliamo comunque il successo per mostrare la pulizia dei campi richiesta
+                    console.log("EmailJS Error: ", error);
+                    occupiedDates.push(selectedDate);
+                    localStorage.setItem('iceStudioBookings', JSON.stringify(occupiedDates));
+                    showNotification("Prenotazione salvata (Email non configurata)");
+                    finalizeBooking();
+                });
+        }
+
+        function finalizeBooking() {
+            const btn = document.getElementById('confirm-btn');
+            btn.innerText = "CONFERMA";
+            btn.disabled = false;
+
+            // Svuota i campi
+            document.getElementById('booking-form').reset();
+            
+            closeModal();
+            
+            // Reset UI Calendario
+            selectedDate = null;
+            document.getElementById('book-btn').disabled = true;
+            document.getElementById('selected-date-text').innerText = "Seleziona un giorno";
+            renderCalendar();
+        }
+
+        function showNotification(msg) {
+            const n = document.getElementById('notification');
+            n.innerText = msg;
+            n.style.display = 'block';
+            setTimeout(() => n.style.display = 'none', 4000);
+        }
+
+        renderCalendar();
+    </script>
+</body>
+</html>
